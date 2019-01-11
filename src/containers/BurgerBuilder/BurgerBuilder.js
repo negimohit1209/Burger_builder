@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Auxiliary from "../../hoc/Auxiliary";
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls'
+import Modal from '../../components/UI/Modal/Modal';
+import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 const INGREDIENT_PRICES = {
   salad: 10,
   cheese: 15,
@@ -18,7 +20,8 @@ export default class BurgerBuilder extends Component {
       cheese: 0
     },
     totalPrice: 25,
-    purchasable: false
+    purchasable: false,
+    purchasing: false
   }
   updatePurchaseState (ingredients){
     const sum = Object.keys(ingredients)
@@ -67,6 +70,19 @@ export default class BurgerBuilder extends Component {
     });
     this.updatePurchaseState(updatedIngredients);
   }
+  purchaseHandler = () => {
+    this.setState({
+      purchasing: true
+    })
+  }
+  purchaseCancelHandler = () => {
+    this.setState({
+      purchasing: false
+    })
+  }
+  purchaseContinueHandler = () => {
+    alert("you continue");
+  }
   render() {
     const disabledInfo = {
       ...this.state.ingredients
@@ -76,13 +92,23 @@ export default class BurgerBuilder extends Component {
     }
     return (
         <Auxiliary>
+        <Modal show={this.state.purchasing} modalClosed={this.purchaseCancelHandler}>
+          <OrderSummary 
+            ingredients={this.state.ingredients}
+            purchaseCanceled = {this.purchaseCancelHandler}
+            purchaseContinued = {this.purchaseContinueHandler}
+            totalPrice = {this.state.totalPrice}
+            />
+        </Modal>
             <Burger ingredients={this.state.ingredients}/>
             <BuildControls 
             ingredientAdded = {this.addIngredientHandler}
             ingredientRemoved = {this.removeIngredientHandler}
             disabled={disabledInfo}
             purchasable={this.state.purchasable}
-            price={this.state.totalPrice}/>
+            price={this.state.totalPrice}
+            purchase={this.purchaseHandler}
+            />
         </Auxiliary>
     )
   }
