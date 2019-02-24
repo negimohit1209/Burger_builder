@@ -13,7 +13,11 @@ export default class ContactData extends Component {
               type: "text",
               placeholder: "Your Name"
             },
-            value: ""
+            value: "",
+            validation: {
+              required: true
+            },
+            valid: false
           },
 
           street: {
@@ -22,7 +26,11 @@ export default class ContactData extends Component {
               type: "text",
               placeholder: "Street"
             },
-            value: ""
+            value: "",
+            validation: {
+              required: true
+            },
+            valid: false
           },
           zipCode: {
             elementType: 'input',
@@ -30,7 +38,13 @@ export default class ContactData extends Component {
               type: "text",
               placeholder: "zip code"
             },
-            value: ""
+            value: "",
+            validation: {
+              required: true,
+              minLength: 5,
+              maxLength: 6
+            },
+            valid: false
           },
           country: {
             elementType: 'input',
@@ -38,7 +52,11 @@ export default class ContactData extends Component {
               type: "text",
               placeholder: "country"
             },
-            value: ""
+            value: "",
+            validation: {
+              required: true
+            },
+            valid: false
           } ,
           email: {
             elementType: 'input',
@@ -46,7 +64,11 @@ export default class ContactData extends Component {
               type: "email",
               placeholder: "Email"
             },
-            value: ""
+            value: "",
+            validation: {
+              required: true
+            },
+            valid: false
           },
           deliveryMethod: {
             elementType: 'select',
@@ -66,7 +88,16 @@ export default class ContactData extends Component {
         this.setState({
       loading: true
     })
-    const order = {}
+    const formData = {};
+    for (let formElementIdentifier in this.state.orderForm){
+      formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value;
+    }
+    const order = {
+      ingredients: this.props.ingredients,
+      price: this.props.price,
+      orderData: formData
+    }
+    console.log(order);
     axios.post('/orders.json', order)
       .then(res => {  
         this.setState({loading: false });
@@ -77,6 +108,20 @@ export default class ContactData extends Component {
       });
     }
 
+    checkValidity(value, rule){
+      let isValid = true;
+      if(rule.required) {
+        isValid = value.trim() !== '' && isValid;
+      }
+      if(rule.minLength ){
+        isValid = value.length >= rule.minLength && isValid
+      }
+      if(rule.maxLength){
+        isValid = value.length <= rule.maxLength && isValid
+      }
+      return isValid
+    }
+
     inputChangedHandler = (event, inputIdentifier) => {
       const updatedOrderForm = {
         ...this.state.orderForm
@@ -85,6 +130,8 @@ export default class ContactData extends Component {
         ...updatedOrderForm[inputIdentifier]
       }
       updatedFormElement.value = event.target.value;
+      updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
+      console.log(updatedFormElement);
       updatedOrderForm[inputIdentifier] = updatedFormElement;
       this.setState({
         orderForm: updatedOrderForm
@@ -99,7 +146,7 @@ export default class ContactData extends Component {
         })
       }
       let form = (
-        <form>
+        <form onSubmit={this.orderHandler}>
         {formElementArray.map(formElement => (
           <Input 
           key={formElement.id}
@@ -108,7 +155,7 @@ export default class ContactData extends Component {
           value={formElement.config.value}
           changed={(event) => this.inputChangedHandler(event, formElement.id)}/>
         ))}
-        <Button btnType="Success" clicked={this.orderHandler}>Order</Button>
+        <Button btnType="Success" >Order</Button>
     </form>
       );
       if(this.state.loading){
