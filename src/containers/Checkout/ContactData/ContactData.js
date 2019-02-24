@@ -17,7 +17,8 @@ export default class ContactData extends Component {
             validation: {
               required: true
             },
-            valid: false
+            valid: false,
+            touched: false
           },
 
           street: {
@@ -30,7 +31,8 @@ export default class ContactData extends Component {
             validation: {
               required: true
             },
-            valid: false
+            valid: false,
+            touched: false
           },
           zipCode: {
             elementType: 'input',
@@ -44,7 +46,8 @@ export default class ContactData extends Component {
               minLength: 5,
               maxLength: 6
             },
-            valid: false
+            valid: false,
+            touched: false
           },
           country: {
             elementType: 'input',
@@ -56,7 +59,8 @@ export default class ContactData extends Component {
             validation: {
               required: true
             },
-            valid: false
+            valid: false,
+            touched: false
           } ,
           email: {
             elementType: 'input',
@@ -68,7 +72,8 @@ export default class ContactData extends Component {
             validation: {
               required: true
             },
-            valid: false
+            valid: false,
+            touched: false
           },
           deliveryMethod: {
             elementType: 'select',
@@ -78,10 +83,13 @@ export default class ContactData extends Component {
                 {value: "cheapest", displayValue: "Cheapest"}
               ]
             },
-            value: ""
+            value: "fastest",
+            validation: {},
+            valid: true
           }
         },
-        loading: false
+        loading: false,
+        formIsValid: false
     }
     orderHandler = (event) => { 
         event.preventDefault();
@@ -97,7 +105,7 @@ export default class ContactData extends Component {
       price: this.props.price,
       orderData: formData
     }
-    console.log(order);
+    // console.log(order);
     axios.post('/orders.json', order)
       .then(res => {  
         this.setState({loading: false });
@@ -119,7 +127,7 @@ export default class ContactData extends Component {
       if(rule.maxLength){
         isValid = value.length <= rule.maxLength && isValid
       }
-      return isValid
+      return isValid;
     }
 
     inputChangedHandler = (event, inputIdentifier) => {
@@ -131,10 +139,16 @@ export default class ContactData extends Component {
       }
       updatedFormElement.value = event.target.value;
       updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
-      console.log(updatedFormElement);
+      updatedFormElement.touched = true;
       updatedOrderForm[inputIdentifier] = updatedFormElement;
+      let formIsValid = true;
+      for(let inputIdentifiers in updatedOrderForm) {
+        formIsValid = updatedOrderForm[inputIdentifiers].valid && formIsValid;
+ 
+      }
       this.setState({
-        orderForm: updatedOrderForm
+        orderForm: updatedOrderForm,
+        formIsValid: formIsValid
       })
     }
   render() {
@@ -153,9 +167,12 @@ export default class ContactData extends Component {
           elementType={formElement.config.elementType} 
           elementConfig={formElement.config.elementConfig} 
           value={formElement.config.value}
+          inValid = {!formElement.config.valid}
+          touched = {formElement.config.touched}
+          shouldValidate = {formElement.config.validation}
           changed={(event) => this.inputChangedHandler(event, formElement.id)}/>
         ))}
-        <Button btnType="Success" >Order</Button>
+        <Button btnType="Success" disabled={!this.state.formIsValid}>Order</Button>
     </form>
       );
       if(this.state.loading){
