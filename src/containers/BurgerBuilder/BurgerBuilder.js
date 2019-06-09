@@ -9,7 +9,7 @@ import Spinner from '../../components/UI/Spinner/Spinner';
 import * as Actions from '../../Store/actions/index';
 
 
-class BurgerBuilder extends Component {
+export class BurgerBuilder extends Component {
   state = {
     purchasable: false,
     purchasing: false,
