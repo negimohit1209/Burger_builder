@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import CheckoutSummary from '../../components/order/CheckoutSummary/CheckoutSummary';
 import { Route, Redirect} from 'react-router-dom';
 import ContactData from './ContactData/ContactData';
-import * as actions from '../../Store/actions/index';
+
 class Checkout extends Component {
     checkoutCancelledHandler = () => {
       this.props.history.goBack();
