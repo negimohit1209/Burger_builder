@@ -1,4 +1,8 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Project is live on: [Project link](https://burger-builder-9dc87.firebaseapp.com).
+
+## Description
+This is a code along project from Udemy course: [React - The Complete Guide (incl Hooks, React Router, Redux)](https://www.udemy.com/react-the-complete-guide-incl-redux/). I have taken this as challenge to update this project and add features to this project.
 
 ## Available Scripts
 
